@@ -82,15 +82,116 @@ segments(x0 = 0.05, y0= L_05, x1 = 0.14, y1 = L_05, col = "gray40", lty = 2)
 segments(x0 = 0.05, y0= 0.00000001, x1 = 0.05, y1 = U_05, col ="gray40", lty = 2)
 
 
-## my mods to make interactive Figure 1 ##
+## mods to make interactive Figure 1 ##
 library(tidyverse)
 library(plotly)
-plot_dat<-as.tibble(list(p_val=p,bf_power=bfPow,bf_lr=bfLR,bf_umpbt=bfUMPBT,bf_local=bfLocal)) %>% 
-  #select('p_val','bf_power','bf_lr') %>% 
+plot_dat1<-as.tibble(list(p_val=p,bf_power=bfPow,bf_lr=bfLR,bf_umpbt=bfUMPBT,bf_local=bfLocal)) %>% 
   gather('bf_power','bf_lr','bf_umpbt','bf_local',key='type', value='bayesfactor')
 
-plt<-ggplot(plot_dat, aes(x=p_val,y=bayesfactor,color=type))+geom_line()
+plt1<-ggplot(plot_dat1, aes(x=p_val,y=bayesfactor,color=type))+geom_line()+
+  scale_y_log10(breaks=c(1,2,5,10,20,50,100))+
+  scale_x_log10(breaks=c(1e-3,2.5e-3,5e-3,1e-2,2.5e-2,5e-2,1e-1))
 
-ggplotly(plt)
+# ggplotly(plt1)
 
 ### Figure 2 ###
+
+pow1=c(5:999)/1000 # power range for 0.005 tests
+pow2=c(50:999)/1000 # power range for 0.05 tests
+alpha=0.005 # test size
+pi0=5/6 # prior probability
+N=10^6 # doesn't matter
+
+#graph margins
+par(mai=c(0.8,0.8,0.1,0.1))
+par(mgp=c(2,1,0))
+
+plot(pow1,alpha*N*pi0/(alpha*N*pi0+pow1*(1-pi0)*N),type='n',ylim = c(0,1), xlim = c(0,1.5),
+     xlab='Power',ylab='False positive rate', bty="n", xaxt="n", yaxt="n")
+
+#grid lines
+segments(x0 = -0.058, y0 = 0, x1 = 1, y1 = 0,lty=1,col = "gray92")
+segments(x0 = -0.058, y0 = 0.2, x1 = 1, y1 = 0.2,lty=1,col = "gray92")
+segments(x0 = -0.058, y0 = 0.4, x1 = 1, y1 = 0.4,lty=1,col = "gray92")
+segments(x0 = -0.058, y0 = 0.6, x1 = 1, y1 = 0.6,lty=1,col = "gray92")
+segments(x0 = -0.058, y0 = 0.8, x1 = 1, y1 = 0.8,lty=1,col = "gray92")
+segments(x0 = -0.058, y0 = 1, x1 = 1, y1 = 1,lty=1,col = "gray92")
+
+lines(pow1,alpha*N*pi0/(alpha*N*pi0+pow1*(1-pi0)*N),lty=1,col="blue",lwd=2)
+odd_1_5_1 = alpha*N*pi0/(alpha*N*pi0+pow1[995]*(1-pi0)*N)
+
+alpha=0.05
+pi0=5/6
+lines(pow2,alpha*N*pi0/(alpha*N*pi0+pow2*(1-pi0)*N),lty=2,col="blue",lwd=2)
+odd_1_5_2 = alpha*N*pi0/(alpha*N*pi0+pow2[950]*(1-pi0)*N)
+
+alpha=0.05
+pi0=10/11
+lines(pow2,alpha*N*pi0/(alpha*N*pi0+pow2*(1-pi0)*N),lty=2,col="red",lwd=2)
+odd_1_10_2 = alpha*N*pi0/(alpha*N*pi0+pow2[950]*(1-pi0)*N)
+
+alpha=0.005
+pi0=10/11
+lines(pow1,alpha*N*pi0/(alpha*N*pi0+pow1*(1-pi0)*N),lty=1,col="red",lwd=2)
+odd_1_10_1 = alpha*N*pi0/(alpha*N*pi0+pow1[995]*(1-pi0)*N)
+
+alpha=0.05
+pi0=40/41
+lines(pow2,alpha*N*pi0/(alpha*N*pi0+pow2*(1-pi0)*N),lty=2,col="green",lwd=2)
+odd_1_40_2 = alpha*N*pi0/(alpha*N*pi0+pow2[950]*(1-pi0)*N)
+
+alpha=0.005
+pi0=40/41
+lines(pow1,alpha*N*pi0/(alpha*N*pi0+pow1*(1-pi0)*N),lty=1,col="green",lwd=2)
+odd_1_40_1 = alpha*N*pi0/(alpha*N*pi0+pow1[995]*(1-pi0)*N)
+
+#customizing axes
+axis(side=2,at=c(-0.5,0,0.2,0.4,0.6,0.8,1.0),
+     labels = c("","0.0","0.2","0.4","0.6","0.8","1.0"),
+     lwd=1,las= 1,tck = -0.01, hadj = 0.4, cex.axis = .8)
+axis(side=1,at=c(-0.5,0,0.2,0.4,0.6,0.8,1.0),
+     labels = c("","0.0","0.2","0.4","0.6","0.8","1.0"),
+     lwd=1,las= 1, tck = -0.01, padj = -1.1, cex.axis = .8)
+legend(1.05,1, c("Prior odds = 1:40","Prior odds = 1:10","Prior odds= 1:5"),
+pch=c(15,15,15),col=c("green","red","blue"), cex = 1)
+
+
+## mods to make interactive Figure 2 ##
+
+alpha=0.005 # test size
+pi0=5/6
+
+alpha*N*pi0/(alpha*N*pi0+pow1*(1-pi0)*N)
+alpha*N*pi0/(alpha*N*pi0+pow2*(1-pi0)*N)
+
+alphas <- c(0.005,0.05)
+pi0s <- c(5/6,10/11,40/41)
+
+combns<-expand.grid(alphas,pi0s)
+
+#mapply(function(x,y) paste(x,y), combns[,1],combns[,2])
+
+tempfun<-function(x,y){
+  #alpha*N*pi0/(alpha*N*pi0+pow1*(1-pi0)*N)
+  if (x==0.005) { #use pow1 for 0.005
+  fpr<-x*N*y/(x*N*y+pow1*(1-y)*N) 
+  out<-cbind(alpha=x,odds=y,fpr=fpr,power=pow1)
+  } else if (x==0.05) { #use pow2 for 0.05
+  fpr<-x*N*y/(x*N*y+pow2*(1-y)*N) 
+  out<-cbind(alpha=x,odds=y,fpr=fpr,power=pow2)
+  }
+out
+}
+
+#tempfun(combns[1,1],combns[1,2])
+
+plot_dat2<-do.call(rbind,mapply(tempfun, combns[,1], combns[,2])) %>% as.tibble()
+
+#plt2<-ggplot(plot_dat2,aes(x=power,y=fpr,color=factor(odds),linetype=factor(alpha)))+geom_line()
+
+plt2<-ggplot(plot_dat2,aes(x=power,y=fpr) )+
+  geom_line(aes(color=factor(odds),linetype=factor(alpha) ))
+
+#ggplotly(plt2)
+
+
