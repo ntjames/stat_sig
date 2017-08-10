@@ -73,7 +73,6 @@ axis(side=4,at=c(-0.2, 0.3,0.5,1,2,5,10,20,50,100),
 axis(side=4,at=c(L_05,U_05),labels = c(2.4,3.4),lwd=1,las= 1,
      tck = -0.01, hadj = 0.4, cex.axis = .6,col.axis="red")
 
-
 ###dashed lines
 segments(x0 = 0.000011, y0= U_005, x1 = 0.005, y1 = U_005, col = "gray40", lty = 2)
 segments(x0 = 0.000011, y0= L_005, x1 = 0.005, y1 = L_005, col = "gray40", lty = 2)
@@ -82,3 +81,16 @@ segments(x0 = 0.05, y0= U_05, x1 = 0.14, y1 = U_05, col = "gray40", lty = 2)
 segments(x0 = 0.05, y0= L_05, x1 = 0.14, y1 = L_05, col = "gray40", lty = 2)
 segments(x0 = 0.05, y0= 0.00000001, x1 = 0.05, y1 = U_05, col ="gray40", lty = 2)
 
+
+## my mods to make interactive Figure 1 ##
+library(tidyverse)
+library(plotly)
+plot_dat<-as.tibble(list(p_val=p,bf_power=bfPow,bf_lr=bfLR,bf_umpbt=bfUMPBT,bf_local=bfLocal)) %>% 
+  #select('p_val','bf_power','bf_lr') %>% 
+  gather('bf_power','bf_lr','bf_umpbt','bf_local',key='type', value='bayesfactor')
+
+plt<-ggplot(plot_dat, aes(x=p_val,y=bayesfactor,color=type))+geom_line()
+
+ggplotly(plt)
+
+### Figure 2 ###
