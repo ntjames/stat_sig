@@ -36,6 +36,23 @@ renderPlot({
 })
 ```
 
+```{r fig1, echo=FALSE}
+#! need to source in or build data from Benjamin et al. supplement
+source('benjamin_et_al_supp.R')
+# then add options to modify power and type I error from 80% and 5%
+
+library(tidyverse)
+library(plotly)
+
+plot_dat<-as.tibble(list(p_val=p,bf_power=bfPow,bf_lr=bfLR,bf_umpbt=bfUMPBT,bf_local=bfLocal)) %>% 
+  gather('bf_power','bf_lr','bf_umpbt','bf_local',key='type', value='bayesfactor')
+
+plt<-ggplot(plot_dat, aes(x=p_val,y=bayesfactor,color=type))+geom_line()
+
+ggplotly(plt)
+
+```
+
 ## Embedded Application
 
 It's also possible to embed an entire Shiny application within an R Markdown document using the `shinyAppDir` function. This example embeds a Shiny application located in another directory:
