@@ -14,11 +14,11 @@ This R Markdown document is made interactive using Shiny. Unlike the more tradit
 
 To learn more, see [Interactive Documents](http://rmarkdown.rstudio.com/authoring_shiny.html).
 
+```{r eruptions, echo=FALSE, eval=FALSE}
 ## Inputs and Outputs
 
-You can embed Shiny inputs and outputs in your document. Outputs are automatically updated whenever inputs change.  This demonstrates how a standard R plot can be made interactive by wrapping it in the Shiny `renderPlot` function. The `selectInput` and `sliderInput` functions create the input widgets used to drive the plot.
+# You can embed Shiny inputs and outputs in your document. Outputs are automatically updated whenever inputs change.  This demonstrates how a standard R plot can be made interactive by wrapping it in the Shiny `renderPlot` function. The `selectInput` and `sliderInput` functions create the input widgets used to drive the plot.
 
-```{r eruptions, echo=FALSE}
 inputPanel(
   selectInput("n_breaks", label = "Number of bins:",
               choices = c(10, 20, 35, 50), selected = 20),
@@ -36,41 +36,48 @@ renderPlot({
 })
 ```
 
-```{r fig1, echo=FALSE}
-#! need to source in or build data from Benjamin et al. supplement
+## Benjamin et al. Figures
+
+```{r fig0, echo=FALSE, cache=FALSE}
+#! source in or build data from Benjamin et al. supplement
 source('benjamin_et_al_supp.R')
-# then add options to modify power and type I error from 80% and 5%
-
-library(tidyverse)
-library(plotly)
-
-plot_dat<-as.tibble(list(p_val=p,bf_power=bfPow,bf_lr=bfLR,bf_umpbt=bfUMPBT,bf_local=bfLocal)) %>% 
-  gather('bf_power','bf_lr','bf_umpbt','bf_local',key='type', value='bayesfactor')
-
-plt<-ggplot(plot_dat, aes(x=p_val,y=bayesfactor,color=type))+geom_line()
-
-ggplotly(plt)
-
+ 
+# !add options to modify power and type I error
 ```
 
+## Interactive Figure 1
+
+```{r fig1, echo=FALSE}
+ggplotly(plt1, width=800, height=500)
+```
+
+## Interactive Figure 2
+
+```{r fig2, echo=FALSE}
+plt2
+#ggplotly(plt2, width=800, height=500) #not working for some reason
+```
+
+
+```{r tabsets, echo=FALSE, eval=FALSE}
 ## Embedded Application
 
-It's also possible to embed an entire Shiny application within an R Markdown document using the `shinyAppDir` function. This example embeds a Shiny application located in another directory:
+#It's also possible to embed an entire Shiny application within an R Markdown document using the `shinyAppDir` function. This example embeds a Shiny application located in another directory:
 
-```{r tabsets, echo=FALSE}
 shinyAppDir(
   system.file("examples/06_tabsets", package = "shiny"),
   options = list(
     width = "100%", height = 550
   )
 )
+
+
+# Note the use of the `height` parameter to determine how much vertical space the embedded application should occupy.
+
+# You can also use the `shinyApp` function to define an application inline rather then in an external directory.
+
+# In all of R code chunks above the `echo = FALSE` attribute is used. This is to prevent the R code within the chunk from rendering in the document alongside the Shiny components.
+
 ```
-
-Note the use of the `height` parameter to determine how much vertical space the embedded application should occupy.
-
-You can also use the `shinyApp` function to define an application inline rather then in an external directory.
-
-In all of R code chunks above the `echo = FALSE` attribute is used. This is to prevent the R code within the chunk from rendering in the document alongside the Shiny components.
-
 
 
